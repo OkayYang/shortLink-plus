@@ -1,0 +1,79 @@
+# 忽略Git相关文件
+.git
+.gitignore
+
+# 忽略Maven构建目录
+target/
+*/target/
+*/target/surefire-reports
+*/target/test-classes
+
+# 忽略日志文件
+*.log
+logs/
+*/logs/
+
+# 忽略IDE相关文件
+.idea/
+*.iml
+.vscode/
+*.sublime-*
+
+# 忽略Docker相关文件
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# 忽略临时文件
+*.tmp
+*.temp
+*.swp
+*~
+
+# 忽略数据目录
+mysql/data/
+redis/data/
+
+# 忽略测试文件
+*/test/
+*/tests/
+*/src/test/
+
+# 忽略文档
+*.md
+docs/
+
+# Maven
+target/
+!**/target/*.jar
+*/target/classes
+*/target/generated-sources
+*/target/generated-test-sources
+*/target/maven-archiver
+*/target/maven-status
+*/target/surefire-reports
+*/target/test-classes
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker/
+.dockerignore
+**/Dockerfile
+docker-compose.yml
+mysql/data/
+redis/data/
+
+# Others
+.DS_Store
+node_modules/
+npm-debug.log 

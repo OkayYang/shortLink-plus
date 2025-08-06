@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.ywenrou.shortlink</groupId>
+    <artifactId>shortlink-plus</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <!-- 主项目maven只需要管理子模块，不需要打包 -->
+    <packaging>pom</packaging>
+
+    <name>shortlink</name>
+    <description>短链接服务</description>
+    <url>https://github.com/OkayYang/shortlink</url>
+
+    <modules>
+        <module>shortlink-console</module>
+        <module>shortlink-system</module>
+        <module>shortlink-gateway</module>
+        <module>shortlink-common</module>
+        <module>shortlink-auth</module>
+        <module>shortlink-agent</module>
+    </modules>
+
+
+    <properties>
+        <shortlink.version>1.0-SNAPSHOT</shortlink.version>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>3.3.0</spring-boot.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
+        <mybatis-spring-boot-starter.version>3.0.2</mybatis-spring-boot-starter.version>
+        <transmittable-thread-local.version>2.14.4</transmittable-thread-local.version>
+        <mybatis-spring.version>3.0.3</mybatis-spring.version>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <commons.io.version>2.13.0</commons.io.version>
+        <fastjson.version>2.0.51</fastjson.version>
+        <jjwt.version>0.9.1</jjwt.version>
+        <hutool.version>5.8.26</hutool.version>
+        <redisson.version>3.21.3</redisson.version>
+        <lombok.version>1.18.34</lombok.version>
+        <shardingsphere.version>5.5.2</shardingsphere.version>
+        <spring-ai.version>1.0.0</spring-ai.version>
+        <rocketmq.version>2.3.0</rocketmq.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot 依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Cloud 依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Cloud Alibaba 依赖管理 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Ai -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+
+            <!-- Mybatis Plus 依赖管理 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- Hutool 工具类库 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <!-- JSON 解析器和生成器 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- Jwt -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <!-- 线程传递值 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc -->
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <!-- RocketMQ Spring Boot Starter -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.ywenrou.shortlink</groupId>
+                <artifactId>shortlink-common-core</artifactId>
+                <version>${shortlink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.ywenrou.shortlink</groupId>
+                <artifactId>shortlink-common-redis</artifactId>
+                <version>${shortlink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.ywenrou.shortlink</groupId>
+                <artifactId>shortlink-common-security</artifactId>
+                <version>${shortlink.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+        <!-- spring ai 仓库 -->
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- 阿里云仓库 -->
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <parameters>true</parameters>
+                    <release>${java.version}</release>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
+</project>

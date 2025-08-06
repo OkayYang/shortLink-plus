@@ -1,0 +1,13 @@
+server:
+  port: 9004
+
+spring:
+  main:
+    web-application-type: reactive
+
+  application:
+    name: shortlink-agent
+  ai:
+    openai:
+      api-key: sk-Vk97glBeYQjmlkb7dPhcYdNDdOZljSHYtEIytJqB536kb26u
+      base-url: https://chatapi.littlewheat.com

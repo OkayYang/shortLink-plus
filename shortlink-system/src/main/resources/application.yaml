@@ -1,0 +1,40 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: shortlink-system
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
+  data:
+    redis:
+      host: redis
+      port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .html
+
+short-link:
+  domain:
+    default: localhost
+
+# RocketMQ 配置
+rocketmq:
+  name-server: rocketmq:10000
+  topic:
+    link-access-stats: link_access_stats
+  tag:
+    link-access-stats: DEFAULT
+  consumer:
+    group: link_access_stats_consumer_group
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml

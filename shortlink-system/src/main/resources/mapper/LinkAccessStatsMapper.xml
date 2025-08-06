@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ywenrou.shortlink.system.dao.mapper.LinkAccessStatsMapper">
+    
+    <!-- 插入或更新访问统计数据 -->
+    <insert id="insertOrUpdate">
+        INSERT INTO sl_link_access_stats 
+        (full_short_url, pv, uv, uip, hour, weekday, date)
+        VALUES 
+        (#{fullShortUrl}, #{pv}, #{uv}, #{uip}, #{hour}, #{weekday}, #{date})
+        ON DUPLICATE KEY UPDATE
+        pv = pv + #{pv},
+        uv = uv + #{uv},
+        uip = uip + #{uip},
+        date = #{date}
+    </insert>
+    
+    <!-- 获取今日访问统计数据 -->
+    <select id="getTodayStats" resultType="java.util.Map">
+        SELECT 
+            COALESCE(SUM(pv), 0) as todayPv,
+            COALESCE(SUM(uv), 0) as todayUv,
+            COALESCE(SUM(uip), 0) as todayUip
+        FROM sl_link_access_stats
+        WHERE full_short_url = #{fullShortUrl}
+        AND date = #{today}
+    </select>
+    
+    <!-- 获取历史访问统计数据 -->
+    <select id="getTotalStats" resultType="java.util.Map">
+        SELECT 
+            COALESCE(SUM(pv), 0) as totalPv,
+            COALESCE(SUM(uv), 0) as totalUv,
+            COALESCE(SUM(uip), 0) as totalUip
+        FROM sl_link_access_stats
+        WHERE full_short_url = #{fullShortUrl}
+    </select>
+    
+    <!-- 批量获取今日访问统计数据 -->
+    <select id="getBatchTodayStats" resultType="java.util.Map">
+        SELECT 
+            full_short_url,
+            COALESCE(SUM(pv), 0) as todayPv,
+            COALESCE(SUM(uv), 0) as todayUv,
+            COALESCE(SUM(uip), 0) as todayUip
+        FROM sl_link_access_stats
+        WHERE full_short_url IN
+        <foreach collection="fullShortUrls" item="url" open="(" separator="," close=")">
+            #{url}
+        </foreach>
+        AND date = #{today}
+        GROUP BY full_short_url
+    </select>
+    
+    <!-- 批量获取历史访问统计数据 -->
+    <select id="getBatchTotalStats" resultType="java.util.Map">
+        SELECT 
+            full_short_url,
+            COALESCE(SUM(pv), 0) as totalPv,
+            COALESCE(SUM(uv), 0) as totalUv,
+            COALESCE(SUM(uip), 0) as totalUip
+        FROM sl_link_access_stats
+        WHERE full_short_url IN
+        <foreach collection="fullShortUrls" item="url" open="(" separator="," close=")">
+            #{url}
+        </foreach>
+        GROUP BY full_short_url
+    </select>
+    
+    <select id="getUserTotalStats" resultType="java.util.Map">
+        SELECT 
+            SUM(pv) as totalPv,
+            SUM(uv) as totalUv,
+            SUM(uip) as totalUip
+        FROM 
+            t_link_access_stats
+        WHERE 
+            full_short_url IN
+            <foreach collection="fullShortUrls" item="url" open="(" separator="," close=")">
+                #{url}
+            </foreach>
+    </select>
+</mapper>

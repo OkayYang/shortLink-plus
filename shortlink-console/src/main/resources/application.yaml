@@ -1,0 +1,35 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: shortlink-console
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
+  data:
+    redis:
+      host: redis
+      port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+# 文件上传配置
+file:
+  upload:
+    path: ./uploads/
+    avatar-path: avatar/
+    url-prefix: /files/
+    max-size: 5242880  # 5MB
+    allowed-image-types: 
+      - jpg
+      - jpeg
+      - png
+      - gif
+      - bmp

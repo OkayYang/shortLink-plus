@@ -1,0 +1,57 @@
+server:
+  port: 8080
+spring:
+  main:
+    web-application-type: reactive
+  data:
+    redis:
+      host: redis
+      port: 6379
+  application:
+    name: shortlink-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+    gateway:
+      discovery:
+        locator:
+          lowerCaseServiceId: true
+          enabled: true
+      routes:
+        - id: shortlink-system
+          uri: lb://shortlink-system  # 修改为正确的服务名
+          predicates:
+            - Path=/api/short-link/**
+          filters:
+            - StripPrefix=1
+        - id: shortlink-console
+          uri: lb://shortlink-console
+          predicates:
+            - Path=/console/**
+          filters:
+            - StripPrefix=1
+        - id: shortlink-auth
+          uri: lb://shortlink-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: shortlink-agent
+          uri: lb://shortlink-agent
+          predicates:
+            - Path=/ai/**
+          filters:
+            - StripPrefix=1
+
+# 安全配置
+security:
+  # 不校验白名单
+  ignore:
+    whites:
+      - /auth/logout
+      - /auth/login
+      - /auth/register
+      - /auth/has-username
+      - /api/short-link/**
+      - /ai/agent/chat/completions

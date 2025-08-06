@@ -1,0 +1,4 @@
+cn.ywenrou.shortlink.common.security.config.WebMvcConfig
+cn.ywenrou.shortlink.common.security.config.ApplicationConfig
+cn.ywenrou.shortlink.common.security.config.FeignAutoConfiguration
+cn.ywenrou.shortlink.common.security.interceptor.FeignRequestInterceptor
