@@ -12,12 +12,12 @@ public class FileUploadConfig {
     /**
      * 文件上传路径
      */
-    private String path = "uploads/";
+    private String path = "/shortlink/uploads/";
     
     /**
      * 头像上传路径
      */
-    private String avatarPath = "uploads/avatar/";
+    private String avatarPath = "/shortlink/uploads/avatar/";
     
     /**
      * 文件访问前缀

@@ -23,8 +23,8 @@ spring:
 # 文件上传配置
 file:
   upload:
-    path: ./uploads/
-    avatar-path: avatar/
+    path: /shortlink/uploads/uploads/
+    avatar-path: /shortlink/uploads/avatar/
     url-prefix: /files/
     max-size: 5242880  # 5MB
     allowed-image-types: 
