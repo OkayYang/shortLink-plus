@@ -23,11 +23,11 @@ spring:
 
 short-link:
   domain:
-    default: localhost
+    default: ywenrou.cn
 
 # RocketMQ 配置
 rocketmq:
-  name-server: rocketmq:10000
+  name-server: rocketmq:9876
   topic:
     link-access-stats: link_access_stats
   tag:

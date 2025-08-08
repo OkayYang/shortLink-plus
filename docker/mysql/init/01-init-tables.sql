@@ -117,7 +117,7 @@ CREATE TABLE `sl_link_router_14` LIKE `sl_link_router_0`;
 CREATE TABLE `sl_link_router_15` LIKE `sl_link_router_0`;
 
 -- 短链接访问统计表
-CREATE TABLE `sl_link_access_stats` (
+CREATE TABLE `sl_link_access_stats_0` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `full_short_url` varchar(128) DEFAULT NULL COMMENT '完整短链接',
   `date` date DEFAULT NULL COMMENT '日期',
@@ -133,6 +133,22 @@ CREATE TABLE `sl_link_access_stats` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_unique_access_stats` (`full_short_url`,`date`,`hour`,`weekday`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `sl_link_access_stats_1` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_2` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_3` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_4` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_5` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_6` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_7` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_8` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_9` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_10` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_11` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_12` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_13` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_14` LIKE `sl_link_access_stats_0`;
+CREATE TABLE `sl_link_access_stats_15` LIKE `sl_link_access_stats_0`;
 
 -- 创建默认管理员用户
 INSERT INTO `sl_user_0` (`username`, `password`, `real_name`, `phone`, `mail`, `create_time`, `update_time`, `del_flag`)
