@@ -21,9 +21,9 @@ spring:
       prefix: /templates/
       suffix: .html
 
-short-link:
+shortlink:
   domain:
-    default: ywenrou.cn
+    default: s.ywenrou.cn
 
 # RocketMQ 配置
 rocketmq:
