@@ -138,12 +138,85 @@ services:
         condition: service_healthy
       gateway:
         condition: service_started
+      rocketmq:
+        condition: service_started
+      rocketmq-broker:
+        condition: service_started
     ports:
       - "9002:9002"
     volumes:
       - ./system/logs:/app/logs
     networks:
       - shortlink-network
+  # RocketMQ NameServer
+  rocketmq:
+    image: apache/rocketmq:5.3.2
+    container_name: shortlink-rocketmq
+    restart: always
+    command: sh mqnamesrv
+    environment:
+      - JAVA_OPT_EXT=-Xms256m -Xmx256m
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./rocketmq/namesrv/logs:/home/rocketmq/logs
+      - ./rocketmq/namesrv/store:/home/rocketmq/store
+    networks:
+      - shortlink-network
+    deploy:
+      resources:
+        limits:
+          memory: 300m
+        reservations:
+          memory: 256m
+
+  # RocketMQ Broker
+  rocketmq-broker:
+    image: apache/rocketmq:5.3.2
+    container_name: shortlink-rocketmq-broker
+    restart: always
+    command: sh mqbroker -n rocketmq:9876 -c /home/rocketmq/rocketmq-5.3.2/conf/broker.conf
+    depends_on:
+      - rocketmq
+    environment:
+      - JAVA_OPT_EXT=-Xms512m -Xmx512m
+    ports:
+      - "10911:10911"
+      - "10909:10909"
+    volumes:
+      - ./rocketmq/conf/broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf
+      - ./rocketmq/broker/logs:/home/rocketmq/logs
+      - ./rocketmq/broker/store:/home/rocketmq/store
+    networks:
+      - shortlink-network
+    deploy:
+      resources:
+        limits:
+          memory: 600m
+        reservations:
+          memory: 512m
+
+  # RocketMQ Console (可选的管理界面)
+  rocketmq-console:
+    image: styletang/rocketmq-console-ng:latest
+    container_name: shortlink-rocketmq-console
+    restart: always
+    depends_on:
+      - rocketmq
+    environment:
+      - JAVA_OPTS=-Xmx128m -Xms128m
+      - rocketmq.config.namesrvAddr=rocketmq:9876
+      - rocketmq.config.isVIPChannel=false
+    ports:
+      - "8180:8080"
+    networks:
+      - shortlink-network
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+        reservations:
+          memory: 128m
 
 networks:
   shortlink-network:
