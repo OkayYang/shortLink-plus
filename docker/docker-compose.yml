@@ -154,47 +154,27 @@ services:
     container_name: shortlink-rocketmq
     restart: always
     command: sh mqnamesrv
-    environment:
-      - JAVA_OPT_EXT=-Xms256m -Xmx256m
     ports:
       - "9876:9876"
-    volumes:
-      - ./rocketmq/namesrv/logs:/home/rocketmq/logs
-      - ./rocketmq/namesrv/store:/home/rocketmq/store
     networks:
       - shortlink-network
-    deploy:
-      resources:
-        limits:
-          memory: 300m
-        reservations:
-          memory: 256m
 
   # RocketMQ Broker
   rocketmq-broker:
     image: apache/rocketmq:5.3.2
     container_name: shortlink-rocketmq-broker
     restart: always
+    # 修复：使用正确的服务名 'rocketmq'，而不是 'rocketmq-nameserver'
     command: sh mqbroker -n rocketmq:9876 -c /home/rocketmq/rocketmq-5.3.2/conf/broker.conf
     depends_on:
-      - rocketmq
-    environment:
-      - JAVA_OPT_EXT=-Xms512m -Xmx512m
+      - rocketmq  # 正确的依赖服务名
     ports:
       - "10911:10911"
       - "10909:10909"
     volumes:
-      - ./rocketmq/conf/broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf
-      - ./rocketmq/broker/logs:/home/rocketmq/logs
-      - ./rocketmq/broker/store:/home/rocketmq/store
+      - ./rocketmq/conf/broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf:ro
     networks:
       - shortlink-network
-    deploy:
-      resources:
-        limits:
-          memory: 600m
-        reservations:
-          memory: 512m
 
   # RocketMQ Console (可选的管理界面)
   rocketmq-console:
@@ -204,19 +184,11 @@ services:
     depends_on:
       - rocketmq
     environment:
-      - JAVA_OPTS=-Xmx128m -Xms128m
-      - rocketmq.config.namesrvAddr=rocketmq:9876
-      - rocketmq.config.isVIPChannel=false
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=rocketmq:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
     ports:
       - "8180:8080"
     networks:
       - shortlink-network
-    deploy:
-      resources:
-        limits:
-          memory: 200m
-        reservations:
-          memory: 128m
 
 networks:
   shortlink-network:
