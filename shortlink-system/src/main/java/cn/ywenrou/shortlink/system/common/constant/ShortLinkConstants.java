@@ -10,7 +10,7 @@ public class ShortLinkConstants
     /**
      * 错误界面
      */
-    public static final String ERROR_PAGE = "https://shortlink.ywenrou.cn/page/notfound";
+    public static final String ERROR_PAGE = "https://ywenrou.cn/404.html";
 
 
 }

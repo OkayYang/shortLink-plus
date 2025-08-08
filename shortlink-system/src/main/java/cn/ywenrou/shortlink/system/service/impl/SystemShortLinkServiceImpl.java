@@ -67,7 +67,7 @@ public class SystemShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, Sho
     private final LinkAccessStatsService linkAccessStatsService;
     private final LinkAccessStatsProducer linkAccessStatsProducer;
 
-    @Value("${short-link.domain.default}")
+    @Value("${shortlink.domain.default:s.ywenrou.cn}")
     private String defaultDomain;
 
     @Override
@@ -82,7 +82,7 @@ public class SystemShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, Sho
          * 再如果大量布隆过滤器误判，那就扩容了
          */
         String username = requestParam.getUsername();
-        String domain = Optional.ofNullable(requestParam.getDomain()).orElse(defaultDomain);
+        String domain = "s.ywenrou.cn";
         String shortLinkSuffix = generateSuffix(domain, requestParam.getOriginUrl());
 
         String fullShortUrl = StrBuilder.create(domain)
