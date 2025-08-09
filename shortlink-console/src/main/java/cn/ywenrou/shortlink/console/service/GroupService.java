@@ -4,6 +4,7 @@ import cn.ywenrou.shortlink.console.dao.entity.GroupDO;
 import cn.ywenrou.shortlink.console.dto.req.GroupCreateReqDTO;
 import cn.ywenrou.shortlink.console.dto.req.GroupUpdateReqDTO;
 import cn.ywenrou.shortlink.console.dto.resp.GroupInfoRespDTO;
+import cn.ywenrou.shortlink.console.dto.resp.GroupStatsRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -26,4 +27,10 @@ public interface GroupService extends IService<GroupDO> {
      * @return 默认分组ID
      */
     String getDefaultGroup();
+    
+    /**
+     * 获取带统计信息的分组列表
+     * @return 分组统计信息列表
+     */
+    List<GroupStatsRespDTO> listGroupsWithStats();
 }

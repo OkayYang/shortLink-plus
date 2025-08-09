@@ -4,14 +4,17 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.ywenrou.shortlink.common.core.domain.AjaxResult;
 import cn.ywenrou.shortlink.common.core.exception.ClientException;
+import cn.ywenrou.shortlink.common.security.utils.SecurityUtils;
 import cn.ywenrou.shortlink.console.dao.entity.GroupDO;
 import cn.ywenrou.shortlink.console.dao.mapper.GroupMapper;
 import cn.ywenrou.shortlink.console.dto.req.GroupCreateReqDTO;
 import cn.ywenrou.shortlink.console.dto.req.GroupUpdateReqDTO;
 import cn.ywenrou.shortlink.console.dto.resp.GroupInfoRespDTO;
+import cn.ywenrou.shortlink.console.dto.resp.GroupStatsRespDTO;
+import cn.ywenrou.shortlink.console.remote.RemoteSystemService;
 import cn.ywenrou.shortlink.console.service.GroupService;
-import cn.ywenrou.shortlink.common.security.utils.SecurityUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -23,6 +26,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static cn.ywenrou.shortlink.common.core.enums.ErrorCodes.GROUP_NAME_EXIST_ERROR;
@@ -34,6 +38,7 @@ import static cn.ywenrou.shortlink.console.common.constant.ShortLinkConstants.MA
 @RequiredArgsConstructor
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
     private final RedissonClient redissonClient;
+    private final RemoteSystemService remoteSystemService;
     @Override
     public void createGroup(GroupCreateReqDTO requestParam) {
         if (DEFAULT_GROUP_NAME.equals(requestParam.getName())) {
@@ -136,5 +141,60 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         
         GroupDO groupDO = baseMapper.selectOne(queryWrapper);
         return groupDO.getGid();
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<GroupStatsRespDTO> listGroupsWithStats() {
+        String username = SecurityUtils.getUsername();
+        
+        // 1. 获取用户的分组基本信息
+        List<GroupDO> groups = baseMapper.selectList(Wrappers.lambdaQuery(GroupDO.class)
+                .eq(GroupDO::getUsername, username)
+                .orderByAsc(GroupDO::getSortOrder));
+        
+        if (CollUtil.isEmpty(groups)) {
+            return List.of();
+        }
+        
+        // 2. 从系统模块获取分组统计数据（使用原来的聚合接口）
+        Map<String, Map<String, Object>> tempStatsMap = Map.of(); // 默认空Map
+        try {
+            AjaxResult result = remoteSystemService.getGroupStatsAggregation(username);
+            if (result.get("data") != null) {
+                List<Map<String, Object>> statsList = (List<Map<String, Object>>) result.get("data");
+                tempStatsMap = statsList.stream()
+                        .collect(Collectors.toMap(
+                                stats -> (String) stats.get("gid"),
+                                stats -> stats,
+                                (v1, v2) -> v1
+                        ));
+            }
+        } catch (Exception e) {
+            // 降级处理，统计数据获取失败时仍返回分组基本信息，使用默认的空Map
+        }
+        final Map<String, Map<String, Object>> statsMap = tempStatsMap;
+        
+        // 3. 合并分组信息和统计数据
+        return groups.stream().map(group -> {
+            GroupStatsRespDTO respDTO = BeanUtil.toBean(group, GroupStatsRespDTO.class);
+            
+            // 填充统计数据
+            Map<String, Object> stats = statsMap.get(group.getGid());
+            if (stats != null) {
+                respDTO.setLinkCount(((Number) stats.getOrDefault("linkCount", 0)).intValue());
+                respDTO.setTotalPv(((Number) stats.getOrDefault("totalPv", 0)).intValue());
+                respDTO.setTotalUv(((Number) stats.getOrDefault("totalUv", 0)).intValue());
+                respDTO.setTotalUip(((Number) stats.getOrDefault("totalUip", 0)).intValue());
+            } else {
+                // 没有统计数据时设置为0
+                respDTO.setLinkCount(0);
+                respDTO.setTotalPv(0);
+                respDTO.setTotalUv(0);
+                respDTO.setTotalUip(0);
+            }
+            
+            return respDTO;
+        }).collect(Collectors.toList());
     }
 }

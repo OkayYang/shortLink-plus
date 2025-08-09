@@ -73,11 +73,26 @@
             SUM(uv) as totalUv,
             SUM(uip) as totalUip
         FROM 
-            t_link_access_stats
+            sl_link_access_stats
         WHERE 
             full_short_url IN
             <foreach collection="fullShortUrls" item="url" open="(" separator="," close=")">
                 #{url}
             </foreach>
+    </select>
+    
+    <!-- 按分组聚合获取用户分组统计数据 -->
+    <select id="getGroupStatsAggregation" resultType="java.util.Map">
+        SELECT 
+            l.gid,
+            COUNT(DISTINCT l.full_short_url) as linkCount,
+            COALESCE(SUM(s.pv), 0) as totalPv,
+            COALESCE(SUM(s.uv), 0) as totalUv,
+            COALESCE(SUM(s.uip), 0) as totalUip
+        FROM sl_link l
+        LEFT JOIN sl_link_access_stats s ON l.full_short_url = s.full_short_url
+        WHERE l.username = #{username} 
+        AND l.del_flag = 0
+        GROUP BY l.gid
     </select>
 </mapper>

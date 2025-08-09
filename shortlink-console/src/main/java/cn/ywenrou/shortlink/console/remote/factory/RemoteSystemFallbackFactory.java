@@ -45,6 +45,11 @@ public class RemoteSystemFallbackFactory implements FallbackFactory<RemoteSystem
             public AjaxResult getUserStats(String username) {
                 return AjaxResult.error(new RemoteException("获取用户统计信息失败").getMessage());
             }
+            
+            @Override
+            public AjaxResult getGroupStatsAggregation(String username) {
+                return AjaxResult.error(new RemoteException("获取分组统计聚合数据失败").getMessage());
+            }
         };
     }
 }

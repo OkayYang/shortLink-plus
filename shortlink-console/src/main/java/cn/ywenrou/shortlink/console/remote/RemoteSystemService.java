@@ -30,4 +30,10 @@ public interface RemoteSystemService {
      */
     @GetMapping("/short-link/stats/user")
     public AjaxResult getUserStats(@RequestParam("username") String username);
+    
+    /**
+     * 获取用户分组统计聚合数据
+     */
+    @GetMapping("/short-link/stats/groups")
+    public AjaxResult getGroupStatsAggregation(@RequestParam("username") String username);
 }

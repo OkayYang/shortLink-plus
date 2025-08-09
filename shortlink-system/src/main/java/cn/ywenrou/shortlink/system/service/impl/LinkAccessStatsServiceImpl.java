@@ -189,4 +189,15 @@ public class LinkAccessStatsServiceImpl extends ServiceImpl<LinkAccessStatsMappe
         
         return visitorId;
     }
+    
+    @Override
+    public List<Map<String, Object>> getGroupStatsAggregation(String username) {
+        try {
+            log.info("获取用户[{}]分组统计信息", username);
+            return baseMapper.getGroupStatsAggregation(username);
+        } catch (Exception e) {
+            log.error("获取用户[{}]分组统计信息异常: {}", username, e.getMessage(), e);
+            return List.of(); // 返回空列表
+        }
+    }
 } 

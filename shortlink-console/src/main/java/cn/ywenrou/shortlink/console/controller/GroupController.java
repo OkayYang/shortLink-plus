@@ -52,4 +52,13 @@ public class GroupController extends BaseController {
     public AjaxResult getDefaultGroup() {
         return success(groupService.getDefaultGroup());
     }
+    
+    /**
+     * 查询分组列表（包含统计信息）
+     * 包含分组下短链接数量、总访问量PV、UV、UIP等统计数据
+     */
+    @GetMapping("/list-with-stats")
+    public AjaxResult listGroupsWithStats() {
+        return success(groupService.listGroupsWithStats());
+    }
 }

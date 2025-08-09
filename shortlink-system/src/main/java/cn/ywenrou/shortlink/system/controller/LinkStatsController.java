@@ -26,4 +26,12 @@ public class LinkStatsController extends BaseController {
     public AjaxResult getUserStats(@RequestParam("username") String username) {
         return success(linkAccessStatsService.getUserStats(username));
     }
+    
+    /**
+     * 获取用户分组统计聚合数据
+     */
+    @GetMapping("/stats/groups")
+    public AjaxResult getGroupStatsAggregation(@RequestParam("username") String username) {
+        return success(linkAccessStatsService.getGroupStatsAggregation(username));
+    }
 } 
