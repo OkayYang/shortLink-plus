@@ -22,10 +22,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Link access statistics service implementation
@@ -194,7 +197,74 @@ public class LinkAccessStatsServiceImpl extends ServiceImpl<LinkAccessStatsMappe
     public List<Map<String, Object>> getGroupStatsAggregation(String username) {
         try {
             log.info("获取用户[{}]分组统计信息", username);
-            return baseMapper.getGroupStatsAggregation(username);
+            
+            // 1. 查询用户创建的所有短链接，按gid分组
+            LambdaQueryWrapper<ShortLinkDO> linkQueryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                    .eq(ShortLinkDO::getUsername, username)
+                    .eq(ShortLinkDO::getDelFlag, 0);
+            
+            List<ShortLinkDO> shortLinks = shortLinkMapper.selectList(linkQueryWrapper);
+            log.info("用户[{}]共有{}个短链接", username, shortLinks.size());
+            
+            if (shortLinks.isEmpty()) {
+                return List.of();
+            }
+            
+            // 2. 按gid分组，统计每个分组的链接数量
+            Map<String, List<ShortLinkDO>> groupedLinks = shortLinks.stream()
+                    .collect(Collectors.groupingBy(ShortLinkDO::getGid));
+            
+            // 3. 获取所有短链接的URL
+            List<String> shortUrls = shortLinks.stream()
+                    .map(ShortLinkDO::getFullShortUrl)
+                    .collect(Collectors.toList());
+            
+            // 4. 查询这些短链接的访问统计数据
+            List<Map<String, Object>> statsDataList = baseMapper.getGroupStatsAggregation(shortUrls);
+            
+            // 5. 将统计数据按URL建立映射
+            Map<String, Map<String, Object>> statsMap = statsDataList.stream()
+                    .collect(Collectors.toMap(
+                            stats -> (String) stats.get("full_short_url"),
+                            stats -> stats,
+                            (v1, v2) -> v1
+                    ));
+            
+            // 6. 为每个分组聚合统计数据
+            List<Map<String, Object>> result = new ArrayList<>();
+            for (Map.Entry<String, List<ShortLinkDO>> entry : groupedLinks.entrySet()) {
+                String gid = entry.getKey();
+                List<ShortLinkDO> linksInGroup = entry.getValue();
+                
+                // 计算该分组的统计数据
+                int linkCount = linksInGroup.size();
+                long totalPv = 0;
+                long totalUv = 0;
+                long totalUip = 0;
+                
+                for (ShortLinkDO link : linksInGroup) {
+                    Map<String, Object> linkStats = statsMap.get(link.getFullShortUrl());
+                    if (linkStats != null) {
+                        totalPv += ((Number) linkStats.getOrDefault("totalPv", 0)).longValue();
+                        totalUv += ((Number) linkStats.getOrDefault("totalUv", 0)).longValue();
+                        totalUip += ((Number) linkStats.getOrDefault("totalUip", 0)).longValue();
+                    }
+                }
+                
+                // 构建分组统计结果
+                Map<String, Object> groupStats = new HashMap<>();
+                groupStats.put("gid", gid);
+                groupStats.put("linkCount", linkCount);
+                groupStats.put("totalPv", totalPv);
+                groupStats.put("totalUv", totalUv);
+                groupStats.put("totalUip", totalUip);
+                
+                result.add(groupStats);
+            }
+            
+            log.info("用户[{}]分组统计完成，共{}个分组", username, result.size());
+            return result;
+            
         } catch (Exception e) {
             log.error("获取用户[{}]分组统计信息异常: {}", username, e.getMessage(), e);
             return List.of(); // 返回空列表

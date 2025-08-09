@@ -62,10 +62,10 @@ public interface LinkAccessStatsMapper extends BaseMapper<LinkAccessStatsDO> {
     Map<String, Object> getUserTotalStats(@Param("fullShortUrls") List<String> fullShortUrls, @Param("username") String username);
     
     /**
-     * 按分组聚合获取用户分组统计数据
+     * 按短链接URL获取访问统计数据，用于分组聚合
      * 
-     * @param username 用户名
-     * @return 包含gid、linkCount、totalPv、totalUv、totalUip的Map列表
+     * @param fullShortUrls 短链接URL列表
+     * @return 包含full_short_url、totalPv、totalUv、totalUip的Map列表
      */
-    List<Map<String, Object>> getGroupStatsAggregation(@Param("username") String username);
+    List<Map<String, Object>> getGroupStatsAggregation(@Param("fullShortUrls") List<String> fullShortUrls);
 }
