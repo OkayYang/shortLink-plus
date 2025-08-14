@@ -10,7 +10,9 @@
 
 一个基于Spring Cloud微服务架构的企业级短链接服务平台，集成AI智能助手，提供完整的短链接生成、管理、统计和分析功能。
 
-[在线演示](https://shortlink.ywenrou.cn) | [快速开始](##🚀 快速开始) | [API文档](https://8yq1cq31k4.apifox.cn) | [部署指南](###Docker部署)
+[在线演示](https://shortlink.ywenrou.cn) | [API文档](https://8yq1cq31k4.apifox.cn)
+
+![image-20250814154716506](https://cos.ywenrou.cn/blog/images/image-20250814154716506.png)
 
 </div>
 
@@ -50,7 +52,7 @@
 
 ## 🏛️ 技术架构
 
-![image-20250814124513505](/Users/xiaoyangxu/Library/Application Support/typora-user-images/image-20250814124513505.png)
+![image-20250814154136010](https://cos.ywenrou.cn/blog/images/image-20250814154136010.png)
 
 ## 🛠️ 技术栈
 
@@ -234,6 +236,7 @@ spring:
 - [Hutool](https://hutool.cn/) - Java工具类库
 - [Nacos](https://nacos.io/) - 动态服务发现和配置管理
 - [RocketMQ](https://rocketmq.apache.org/) - 分布式消息中间件
+- [马丁ShortLink](https://gitee.com/nageoffer/shortlink) -nageoffer短链接项目
 
 ---
 
