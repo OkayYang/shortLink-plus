@@ -10,7 +10,7 @@
 
 一个基于Spring Cloud微服务架构的企业级短链接服务平台，集成AI智能助手，提供完整的短链接生成、管理、统计和分析功能。
 
-[在线演示](https://github.com/OkayYang/shortlink) | [快速开始](#快速开始) | [API文档](#api接口) | [部署指南](#部署指南)
+[在线演示](https://shortlink.ywenrou.cn) | [快速开始](##🚀 快速开始) | [API文档](https://8yq1cq31k4.apifox.cn) | [部署指南](###Docker部署)
 
 </div>
 
@@ -31,7 +31,7 @@
 
 ### 🤖 AI智能助手
 - **集成Spring AI**: 基于OpenAI API的智能聊天助手
-- **工具调用能力**: 支持天气查询、日期时间、短链接生成等工具
+- **工具调用能力**: 支持短链接智能推广文案生成
 - **流式响应**: Server-Sent Events实现的流式对话体验
 - **智能内容生成**: 自动抓取网页内容，生成推广文案
 
@@ -50,44 +50,7 @@
 
 ## 🏛️ 技术架构
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        前端应用                               │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────────┐
-│                   网关服务 (Gateway)                         │
-│              Spring Cloud Gateway                           │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-        ┌─────────────┼─────────────┐
-        │             │             │
-┌───────▼──────┐ ┌───▼────┐ ┌─────▼─────┐ ┌──────────────┐
-│   控制台服务   │ │认证服务 │ │ 系统服务   │ │   AI代理服务  │
-│  (Console)   │ │ (Auth) │ │(System)   │ │   (Agent)    │
-│              │ │        │ │           │ │              │
-│ 用户管理      │ │JWT认证 │ │短链接核心  │ │ Spring AI    │
-│ 分组管理      │ │用户登录 │ │访问统计    │ │ 工具调用      │
-│ 短链接代理     │ │        │ │数据分析    │ │ 智能对话      │
-└──────────────┘ └────────┘ └───────────┘ └──────────────┘
-        │             │             │             │
-        └─────────────┼─────────────┼─────────────┘
-                      │             │
-┌─────────────────────▼─────────────▼─────────────────────────┐
-│                    服务注册中心                               │
-│                    Nacos Server                             │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│                    数据存储层                                │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐     │
-│  │    MySQL     │ │    Redis     │ │    RocketMQ     │     │
-│  │              │ │              │ │                  │     │
-│  │ 分库分表      │ │ 缓存存储      │ │ 消息队列          │     │
-│  │ 数据持久化     │ │ 分布式锁      │ │ 异步处理          │     │
-│  └──────────────┘ └──────────────┘ └──────────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-```
+![image-20250814124513505](/Users/xiaoyangxu/Library/Application Support/typora-user-images/image-20250814124513505.png)
 
 ## 🛠️ 技术栈
 
@@ -157,14 +120,6 @@ git clone https://github.com/OkayYang/shortlink.git
 cd shortlink
 ```
 
-2. **启动基础服务**
-```bash
-# 启动 MySQL、Redis、Nacos、RocketMQ
-# 可以使用Docker Compose快速启动
-cd docker
-docker-compose up -d mysql redis nacos rocketmq
-```
-
 3. **配置数据库**
 ```bash
 # 执行数据库初始化脚本
@@ -178,38 +133,20 @@ mysql -u root -p < docker/mysql/init/01-init-tables.sql
 ```
 
 5. **启动服务**
-```bash
-# 按顺序启动各个服务
-mvn clean compile
-# 1. 启动认证服务
-cd shortlink-auth && mvn spring-boot:run
-
-# 2. 启动系统服务
-cd shortlink-system && mvn spring-boot:run
-
-# 3. 启动控制台服务
-cd shortlink-console && mvn spring-boot:run
-
-# 4. 启动网关服务
-cd shortlink-gateway && mvn spring-boot:run
-
-# 5. 启动AI代理服务（可选）
-cd shortlink-agent && mvn spring-boot:run
-```
-
 ### Docker部署
 
 1. **构建项目**
-```bash
-mvn clean package -DskipTests
-```
-
 2. **使用Docker Compose部署**
 ```bash
+# 启动 MySQL、Redis、Nacos、RocketMQ
+# 可以使用Docker Compose快速启动
 cd docker
-./copy-jars.sh      # 复制JAR包
-./build-images.sh   # 构建镜像
-docker-compose up -d
+# copy jar包
+sh copy-jars.sh
+# 构建基础镜像
+sh build-images.sh
+# 启动服务
+sh start-project.sh
 ```
 
 ## 🔧 配置说明
@@ -255,96 +192,6 @@ spring:
       base-url: https://api.openai.com
 ```
 
-## 📚 API接口
-
-### 短链接管理
-
-#### 创建短链接
-```http
-POST /short-link/create
-Content-Type: application/json
-
-{
-    "originUrl": "https://www.example.com",
-    "domain": "short.ly",
-    "gid": "group001",
-    "expireTime": "2024-12-31T23:59:59",
-    "describe": "示例短链接"
-}
-```
-
-#### 短链接重定向
-```http
-GET /{shortUri}
-```
-
-#### 获取访问统计
-```http
-GET /short-link/stats/user?username=testuser
-```
-
-### AI助手
-
-#### 智能对话
-```http
-POST /agent/chat/completions
-Content-Type: application/json
-
-{
-    "message": "请帮我生成一个短链接：https://blog.example.com",
-    "model": "gpt-3.5-turbo"
-}
-```
-
-## 📊 监控和统计
-
-### 访问统计指标
-
-- **PV (Page View)**: 页面访问量
-- **UV (Unique Visitor)**: 独立访客数
-- **UIP (Unique IP)**: 独立IP数
-- **按时段统计**: 24小时访问分布
-- **按星期统计**: 7天访问分布
-
-### 性能监控
-
-- **缓存命中率**: Redis缓存性能
-- **数据库连接**: 连接池使用情况
-- **消息队列**: RocketMQ消息处理状态
-- **服务健康**: 各微服务健康状态
-
-## 🔒 安全特性
-
-### 认证授权
-- JWT Token认证
-- 用户登录/注册
-- 权限控制
-
-### 防护机制
-- 布隆过滤器防缓存穿透
-- 分布式锁防缓存击穿
-- 限流保护
-- SQL注入防护
-
-### 数据安全
-- 敏感信息加密
-- 数据备份策略
-- 访问日志记录
-
-## 🎯 最佳实践
-
-### 性能优化
-1. **缓存策略**: 多级缓存，合理设置过期时间
-2. **数据库优化**: 分库分表，索引优化
-3. **异步处理**: 统计数据异步处理，提升响应速度
-4. **连接池**: 合理配置数据库和Redis连接池
-
-### 高可用部署
-1. **服务集群**: 多实例部署关键服务
-2. **负载均衡**: 使用Nginx或Spring Cloud Gateway
-3. **故障转移**: 配置服务降级和熔断
-4. **监控告警**: 完善的监控和告警机制
-
 ## 🤝 贡献指南
 
 我们欢迎所有形式的贡献，包括但不限于：
@@ -373,9 +220,9 @@ Content-Type: application/json
 
 ## 📞 联系我们
 
-- **项目地址**: [https://github.com/OkayYang/shortlink](https://github.com/OkayYang/shortlink)
-- **问题反馈**: [Issues](https://github.com/OkayYang/shortlink/issues)
-- **技术讨论**: [Discussions](https://github.com/OkayYang/shortlink/discussions)
+- **项目地址**: [https://github.com/OkayYang/shortLink-plus](https://github.com/OkayYang/shortLink-plus)
+- **问题反馈**: [Issues](https://github.com/OkayYang/shortLink-plus/issues)
+- **技术讨论**: [Discussions](https://github.com/OkayYang/shortLink-plus/discussions)
 
 ## 🙏 致谢
 
